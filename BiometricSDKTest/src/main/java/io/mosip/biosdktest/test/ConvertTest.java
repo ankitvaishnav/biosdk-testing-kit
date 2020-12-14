@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.biosdktest.config.LoggerConfig;
+import io.mosip.kernel.core.logger.spi.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +30,10 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
  */
 @Component
 public class ConvertTest {
+
+	private Logger LOGGER = LoggerConfig.logConfig(ConvertTest.class);
+
+	private Gson gson = new GsonBuilder().serializeNulls().create();
 
 	@Autowired
 	private TestResultBuilder builder;
@@ -777,6 +785,7 @@ public class ConvertTest {
 				try {
 					BiometricRecord response = helper.getProvider(result.getModality())
 							.convertFormat(probeBirBiometricRecord, from, to, null, null, bioTypeList);
+					LOGGER.info("", "", "convert", gson.toJson(response));
 					boolean status = response.getSegments().stream()
 							.allMatch(bir -> Objects.nonNull(bir.getBirInfo())
 									&& Objects.nonNull(bir.getBirInfo().getPayload())

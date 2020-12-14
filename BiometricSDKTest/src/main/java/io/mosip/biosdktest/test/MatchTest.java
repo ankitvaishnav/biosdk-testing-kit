@@ -8,6 +8,10 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.biosdktest.config.LoggerConfig;
+import io.mosip.kernel.core.logger.spi.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +36,10 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
  */
 @Component
 public class MatchTest {
+
+	private Logger LOGGER = LoggerConfig.logConfig(MatchTest.class);
+
+	private Gson gson = new GsonBuilder().serializeNulls().create();
 
 	@Autowired
 	private TestResultBuilder builder;
@@ -419,6 +427,9 @@ public class MatchTest {
 					System.err.println(result.getModality());
 					Response<MatchDecision[]> matchResult = helper.getProvider(result.getModality())
 							.match(probeBirBiometricRecord, galleryBirBiometricRecords, bioTypeList, null);
+					//TODO AV
+					LOGGER.info("", "", "match", gson.toJson(matchResult));
+					System.out.println();
 					if (matchResult.getStatusCode() >= 200 && matchResult.getStatusCode() <= 299) {
 						List<Map<BiometricType, Decision>> matchDecisions = Arrays.asList(matchResult.getResponse())
 								.stream().map(matchDecision -> matchDecision.getDecisions())

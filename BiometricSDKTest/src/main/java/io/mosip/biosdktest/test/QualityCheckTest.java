@@ -8,6 +8,10 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.biosdktest.config.LoggerConfig;
+import io.mosip.kernel.core.logger.spi.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -33,6 +37,10 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 public class QualityCheckTest {
 
 	private static final String QUALITY_CHECK_THRESHOLD_VALUE = ".qualitycheck.threshold.value";
+
+	private Logger LOGGER = LoggerConfig.logConfig(QualityCheckTest.class);
+
+	private Gson gson = new GsonBuilder().serializeNulls().create();
 
 	@Autowired
 	private Environment env;
@@ -343,6 +351,8 @@ public class QualityCheckTest {
 				try {
 					Response<QualityCheck> qualityResult = helper.getProvider(result.getModality())
 							.checkQuality(biometricRecord, bioTypeList, null);
+					//TODO AV
+					LOGGER.info("", "", "match", gson.toJson(qualityResult));
 					result.setStatusCode(qualityResult.getStatusCode()).setStatus(true);
 					if (qualityResult.getStatusCode() >= 200 && qualityResult.getStatusCode() <= 299) {
 						Set<Entry<BiometricType, QualityScore>> entrySet = qualityResult.getResponse().getScores()

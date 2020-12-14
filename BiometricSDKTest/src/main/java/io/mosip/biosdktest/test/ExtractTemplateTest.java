@@ -9,6 +9,10 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.biosdktest.config.LoggerConfig;
+import io.mosip.kernel.core.logger.spi.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -38,6 +42,10 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 public class ExtractTemplateTest {
 
 	private static final String QUALITY_CHECK_THRESHOLD_VALUE = ".qualitycheck.threshold.value";
+
+	private Logger LOGGER = LoggerConfig.logConfig(ExtractTemplateTest.class);
+
+	private Gson gson = new GsonBuilder().serializeNulls().create();
 
 	@Autowired
 	private Environment env;
@@ -553,6 +561,7 @@ public class ExtractTemplateTest {
 				try {
 					Response<BiometricRecord> extractResult = helper.getProvider(result.getModality())
 							.extractTemplate(biometricRecord, bioTypeList, null);
+					LOGGER.info("", "", "extractTemplate", gson.toJson(extractResult));
 					if (extractResult.getStatusCode() >= 200 && extractResult.getStatusCode() <= 299
 							&& Objects.nonNull(extractResult.getResponse())) {
 						extractResult.getResponse().getSegments().stream().filter(

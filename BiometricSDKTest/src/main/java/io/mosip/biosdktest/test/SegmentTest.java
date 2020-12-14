@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.biosdktest.config.LoggerConfig;
+import io.mosip.kernel.core.logger.spi.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +32,10 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
  */
 @Component
 public class SegmentTest {
+
+	private Logger LOGGER = LoggerConfig.logConfig(SegmentTest.class);
+
+	private Gson gson = new GsonBuilder().serializeNulls().create();
 
 	@Autowired
 	private TestResultBuilder builder;
@@ -269,6 +277,7 @@ public class SegmentTest {
 				try {
 					Response<BiometricRecord> segmentedDataResponse = helper.getProvider(result.getModality())
 							.segment(bioRecord, bioTypeList, null);
+					LOGGER.info("", "", "segment", gson.toJson(segmentedDataResponse));
 					if (segmentedDataResponse.getStatusCode() >= 200 && segmentedDataResponse.getStatusCode() <= 299
 							&& Objects.nonNull(segmentedDataResponse.getResponse())
 							&& Objects.nonNull(segmentedDataResponse.getResponse().getSegments())) {segmentedDataResponse.getResponse().getSegments()

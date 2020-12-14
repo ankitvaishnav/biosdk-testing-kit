@@ -11,6 +11,11 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.biosdktest.config.LoggerConfig;
+import io.mosip.biosdktest.test.MatchTest;
+import io.mosip.kernel.core.logger.spi.Logger;
 import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +39,10 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
  */
 @Component
 public class BioSDKTestRunner implements CommandLineRunner {
+
+	private Logger LOGGER = LoggerConfig.logConfig(BioSDKTestRunner.class);
+
+	private Gson gson = new GsonBuilder().serializeNulls().create();
 
 	private static final String THREADPOOL_SIZE = "threadpool.size";
 
@@ -90,6 +99,7 @@ public class BioSDKTestRunner implements CommandLineRunner {
 
 	private void executeTest(String testCaseName, String testMethod, List<String> modalities, String probe,
 			List<String> galleryFileNames) {
+		LOGGER.info("", "", "Testcase", testCaseName+" "+testMethod);
 		try {
 			ReflectionTestUtils.invokeMethod(test, testMethod, testCaseName, modalities, probe, galleryFileNames);
 		} catch (UndeclaredThrowableException e) {
@@ -106,6 +116,7 @@ public class BioSDKTestRunner implements CommandLineRunner {
 			logger.build(testCaseName, modalities.toString(), null, null,
 					"Exception: Test method " + testMethod + " not found", null);
 		}
+		LOGGER.info("", "", "Testcase", "--------------------------------------------");
 	}
 
 	private boolean validateInputs(String testCaseName, String modality, String testMethod, List<String> inputs) {
